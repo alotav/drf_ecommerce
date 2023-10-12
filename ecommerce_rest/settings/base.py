@@ -28,6 +28,8 @@ BASE_APPS = [
 ]
 
 LOCAL_APPS =[
+    'apps.base',
+    'apps.products',
     'apps.users',
 ]
 
