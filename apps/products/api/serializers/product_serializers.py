@@ -22,6 +22,7 @@ class ProductSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         return {
             'id': instance.id,
+            'name': instance.name,
             'description': instance.description,
             'image': instance.image if instance.image != '' else '', # validamos si no hay url a la imagen que responda ''
             'measure_unit': instance.measure_unit.description,
