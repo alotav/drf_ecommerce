@@ -3,6 +3,7 @@ from django.contrib.sessions.models import Session
 from datetime import datetime
 
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -54,3 +55,37 @@ class Login(ObtainAuthToken):
         else:
                 return Response({'error': 'Nombre de usuario o contraseña incorrectos.'}, status= status.HTTP_400_BAD_REQUEST)
         return Response({'mensaje': 'Hola desde response'}, status=status.HTTP_200_OK)
+
+
+class Logout(APIView):
+    
+    def get(self, request, *args, **kwargs):
+
+        try:
+            # recibimos el token desde en front en variable token
+            token = request.GET.get('token')
+            print(token)
+            token = Token.objects.filter(key=token).first()
+
+            if token:
+                user = token.user
+
+                all_sessions = Session.objects.filter(expire_date__gte = datetime.now()) # tiempo mayor o igual que
+                if all_sessions.exists():
+                    # si coincide el id del usuario con el id de la sesion entonces la borramos
+                    for session in all_sessions:
+                        session_data = session.get_decoded()
+                        if user.id == int(session_data.get('_auth_user_id')):
+                            session.delete()
+                
+                token.delete()
+
+                session_message = 'Sesion de usuario eliminada'
+                token_message = 'Token eliminado'
+                return Response({'token_message': token_message, 'session_message': session_message}, status=status.HTTP_200_OK)
+
+            return Response({'error': 'No se ha encontrado un usuario con esas credenciales'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # en caso que no envien el token desde el front
+        except: 
+            return Response({'error': 'No se ha encontrado token en la peticion.'}, status=status.HTTP_409_CONFLICT)
