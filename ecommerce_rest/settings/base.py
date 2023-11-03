@@ -121,12 +121,12 @@ AUTH_USER_MODEL = 'users.User'
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",
+# ]
 
 CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3000",
+    "http://localhost:5173",
 ]
 
 STATIC_URL = 'static/'

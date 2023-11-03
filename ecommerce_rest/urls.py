@@ -29,8 +29,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('usuario/',include('apps.users.api.urls')),
     path('products/',include('apps.products.api.routers')), # enlazamos al router
-    path('', Login.as_view(), name='Login'),
-    path('logout/', Logout.as_view(), name='Logout'),
+    path('login/', Login.as_view(), name='login'),
+    path('logout/', Logout.as_view(), name='logout'),
     path('refresh-token/', UserToken.as_view(), name = 'refresh_token'),
     # Swagger routes
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),

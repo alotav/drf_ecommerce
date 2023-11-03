@@ -8,16 +8,21 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 
+from apps.users.authentication_mixins import Authentication
 from apps.users.api.serializers import UserTokenSerializer
 
-class UserToken(APIView):
+class UserToken(Authentication, APIView):
+    """
+    Validate Token
+    """
     def get(self,request,*args,**kwargs):
-        username = request.GET.get('username')
+        
         try:
-            user_token = Token.objects.get(user = UserTokenSerializer().Meta.model.objects.filter(username = username).first()
-            )
+            user_token, _ = Token.objects.get_or_create(user = self.user)
+            user = UserTokenSerializer(self.user)
             return Response({
-                'tokem' : user_token.key
+                'token' : user_token.key,
+                'user': user.data
                 })
         except:
             return Response({
@@ -64,6 +69,10 @@ class Login(ObtainAuthToken):
                         'user': user_serializer.data,
                         'message': 'Inicio de sesion exitoso',
                     }, status = status.HTTP_201_CREATED)
+                    # token.delete()
+                    # return Response({
+                    #     'error':'Ya se ha iniciado sesion con este usuario'
+                    # }, status=status.HTTP_409_CONFLICT)
             else:
                 return Response({'error': 'Este usuario no puede iniciar sesion.'}, status= status.HTTP_401_UNAUTHORIZED)
         else:
